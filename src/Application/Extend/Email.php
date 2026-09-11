@@ -10,7 +10,7 @@ class Email extends Email_parent
     protected $_sSendRequestEmailTemplateHtml = "@sendrequest/sendrequestEmailHtml.html.twig";
     protected $_sSendRequestEmailTemplatePlain = "@sendrequest/sendrequestEmailPlain.html.twig";
 
-    protected function sendRequestWithComment($wdf, $toUser = false)
+    protected function sendRequestWithComment($adata, $toUser = false)
     {
         $oShop = $this->getShop();
         $this->setMailParams($oShop);
