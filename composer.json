@@ -1,0 +1,35 @@
+{
+    "name": "benedikt99-ger/sendrequest",
+    "description": "sendrequest für OXID 7",
+    "type": "oxideshop-module",
+    "keywords": [
+        "oxid",
+        "modules",
+        "eShop"
+    ],
+    "license": [
+        "MIT"
+    ],
+    "require": {
+        "php": "^8.2"
+    },
+	"repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/benedikt99-ger/sendrequest"
+        }
+    ],
+	"extra": {
+    	"oxideshop": {
+        	"target-directory": "nuenemann/sendrequest"
+    	}
+	},
+    "conflict": {
+        "oxid-esales/oxideshop-ce": "<7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "nuenemann\\sendrequest\\": "src/"
+        }
+    }
+}
