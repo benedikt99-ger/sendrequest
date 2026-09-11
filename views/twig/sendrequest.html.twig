@@ -1,0 +1,324 @@
+{% capture append="oxidBlock_content"  %}
+
+    {% set template_title=oView.getTitle()  %}
+	
+	{% set isAjaxCall=oView.isAjax()  %}
+ 	{% set wdfname=oView.getWdfPostValue('name')  %}
+	{% set wdfstreet=oView.getWdfPostValue('street')  %}
+	{% set wdfzipcity=oView.getWdfPostValue('zipcity')  %}
+	{% set wdfcountry=oView.getWdfPostValue('country')  %}
+	{% set wdfemail=oView.getWdfPostValue('email')  %}
+	{% set oxorderid=oView.getWdfPostValue('oxorderid')  %}
+	{% set wdfdatenschutz=oView.getWdfPostValue('datenschutz')  %}
+	
+	<div class="container-xxl" id="content">
+		<div class="row bg-white p-4 m-4" >
+		<h1 class="page-header">{{ template_title  }}</h1>
+{#		Debug
+
+		isAjax {{ isAjaxCall }}
+		Name {% if oView.getWdfPostValue('name') %}
+			{{ wdfname }}
+		{% endif %}
+		street	{% if oView.getWdfPostValue('street') %}
+			{{ wdfstreet }}
+		{% endif %}		
+		zipcity	{% if oView.getWdfPostValue('zipcity') %}
+			{{ wdfzipcity }}
+		{% endif %}		
+		country	{% if oView.getWdfPostValue('country') %}
+			{{ wdfcountry }}
+		{% endif %}			
+		email{% if oView.getWdfPostValue('email') %}
+			{{ wdfemail }}
+		{% endif %}			
+		<br>orderid	{% if oView.getWdfPostValue('oxorderid') %}
+			{{ oxorderid }}
+		{% endif %}		
+		datenschutz	{% if oView.getWdfPostValue('datenschutz') %}
+			{{ wdfdatenschutz }}
+		{% endif %}	
+#}		
+
+		
+		<form class="form-horizontal" action="{{ oViewConf.getSslSelfLink() }}" method="post" role="form" id="wdf">
+        <div class="hidden">
+            {{ oViewConf.getHiddenSid()|raw }}
+            <input type="hidden" name="fnc" value=""/>
+			<input type="hidden" name="cl" value="{{ oViewConf.getActiveClassName() }}">
+            <input type="hidden" name="user" value="{{ oxcmp_user.oxuser__oxusername.value  }}"/>
+        </div>
+        
+
+            {% if submitSuccess  %}
+
+                    <div class="alert alert-success">{{ translate({ ident: "WITHDRAWAL_SUCCESS"  }) }}</div>
+
+            {% else  %}
+
+                    <div class="alert alert-info">Bitte füllen Sie sorgfältig dieses Fomular aus. Im Anschluß erhalten Sie eine Email mit Ihren Angaben und Instruktionen für den Rückversand der Ware.<br>
+					{% if oxcmp_user and oView.getUserOrders()   %}
+					
+					{% else   %}
+						<strong>Hinweis: Wenn Sie sich vorher einloggen, wird das Formular für Sie gefüllt und Sie können bequem eine Bestellung wählen</strong>
+					{% endif %}
+					
+                    </div>
+
+                    <div class="mb-3 form-floating">
+                            <input type="text" class="form-control" id="wdfname" name="wdf[name]" required autocomplete="shipping name"
+                                   value="{% if wdfname  %}
+								   {{ wdfname  }}
+								   {% elseif oxcmp_user  %}
+								   {{ oxcmp_user.oxuser__oxfname.value }}
+								   {{ oxcmp_user.oxuser__oxlname.value }}
+								   {% endif %}">
+                        <label for="wdfname" class="">{{ translate({ ident: "FIRST_NAME"  }) }}
+                            , {{ translate({ ident: "LAST_NAME"  }) }} <b>*</b></label>
+
+                    </div> {# NAME #}
+                    <div class="mb-3 form-floating">
+                         <input type="text" class="form-control" id="wdfstreet" name="wdf[street]" required autocomplete="shipping street-address"
+                                   value="{% if wdfstreet  %}
+								   {{ wdfstreet  }}
+								   {% elseif oxcmp_user  %}
+								   {{ oxcmp_user.oxuser__oxstreet.value  }}
+								   {{ oxcmp_user.oxuser__oxstreetnr.value  }}
+								   {% endif %}">
+                        <label for="wdfstreet" class="">{{ translate({ ident: "STREET_AND_STREETNO"  }) }} <b>*</b></label>
+                    </div> {# STRASSE #}
+                    <div class="mb-3 form-floating">
+                        <input type="text" class="form-control" id="wdfzipcity" name="wdf[zipcity]" required autocomplete="shipping postal-code address-level2"
+                                   value="{% if wdfzipcity  %}
+								   {{ wdfzipcity  }}
+								   {% elseif oxcmp_user  %}
+								   {{ oxcmp_user.oxuser__oxzip.value  }}
+								   {{ oxcmp_user.oxuser__oxcity.value  }}
+								   {% endif %}">
+                        <label for="wdfzipcity" class="">{{ translate({ ident: "POSTAL_CODE_AND_CITY"  }) }} <b>*</b></label>
+                    </div> {# PLZ ORT #}
+                    <div class="mb-3 form-floating">
+						{% if oViewConf.getCountryList()|length == 1  %}
+							{% for _country in oViewConf.getCountryList()  %}
+							<input type="text" class="form-control" id="wdfcountry" name="wdf[country]" required value="{{ _country.oxcountry__oxtitle.value  }}" readonly autocomplete="shipping country-name">
+							{% endfor %}
+						{% else  %}
+							<select name="wdf[country]" class="form-select" required>
+								<option>Wählen Sie Ihr Land</option>
+								{% for _country in oViewConf.getCountryList() %}
+									<option id="wdfcountry_{{ _country.oxcountry__oxid.value  }}" value="{{ _country.oxcountry__oxtitle.value  }}"
+											{% if wdfcountry == _country.oxcountry__oxtitle.value or oxcmp_user.oxuser__oxcountryid.value == _country.oxcountry__oxid.value   %}
+											selected
+											{% endif %}>
+										{{ _country.oxcountry__oxtitle.value  }}
+									</option>
+								{% endfor %}
+							</select>
+						{% endif %}
+                        <label class="">{{ translate({ ident: "COUNTRY"  }) }} <b>*</b></label>
+                    </div> {# Land #}
+                    <div class="mb-3 form-floating">
+                        <input type="email" class="form-control" id="wdfemail" name="wdf[email]" required autocomplete="email"
+                                   value="{{ wdfemail|default(oxcmp_user.oxuser__oxusername.value)  }}">
+                        <label for="wdfemail" class="">{{ translate({ ident: "EMAIL_ADDRESS"  }) }} <b>*</b></label>
+                    </div> {# Email #}
+                    <div class="mb-3 form-floating">
+						{% if not oView.getUserOrders()  %}
+							<input type="text" class="form-control" id="wdforder" name="wdf[order]" required autocomplete="off" value="{{ wdforder  }}">
+						{% else  %}
+							<select name="wdf[oxorderid]" id="wdforder" class="form-control" required>
+								<option value="">- {{ translate({ ident: "PLEASE_CHOOSE"  }) }} -</option>
+								{% for _order in oView.getUserOrders() %}
+									<option value="{{ _order.oxorder__oxid.value  }}" {% if _order.oxorder__oxid.value==oxorderid  %}selected{% endif %}>
+										Bestellung Nr.{{ _order.oxorder__oxordernr.value  }} vom {{ _order.oxorder__oxorderdate.value  }}
+									</option>
+								{% endfor %}
+							</select>
+						{% endif %}
+                        <label for="wdforder" class="">
+                            {{ translate({ ident: "PAGE_TITLE_ORDER"  }) }}
+                            {% if not oView.getUserOrders()  %}
+								{{ translate({ ident: "NUMBER_2"  }) }} & {{ translate({ ident: "DATE"  }) }}
+							{% endif %}
+							<b>*</b>
+                        </label>
+                    </div> {# Bestellung #}
+
+
+                <div class="mb-3 form-floating">
+                    {% if oxcmp_user and oView.getUserOrders() and not oxorderid   %}
+                        {# angemeldeter benutzer + hat Bestellungen + noch keine Bestellung ausgewählt#}
+                        <div class="alert alert-info text-center" role="alert">Wählen Sie Ihre Bestellung aus der Liste</div>
+                    {% elseif oxcmp_user and oView.getUserOrders() and aOrderProducts and aOrderProducts|length >= 1   %}
+                        {# angemeldeter benutzer + Bestellung ausgewählt +  Zeige Liste der Produkte aus der Bestellung #}
+
+                        {% if aOrderProducts|length == 1  %}
+                            <h3>Sie widerrufen den Kauf von folgendem Produkt:</h3>
+                        {% else  %}
+                            <h3>Welcher Produkte möchten Sie zurück geben?</h3>
+                        {% endif %}
+
+                        {% for _orderaarticle in aOrderProducts %}
+                            <div class="mb-3 form-floating pt-2">
+                                {# checkbox + name #}
+                                <div class="checkbox col-12 col-md-5">
+                                    <h4>
+                                        {{ _orderaarticle.oxorderarticles__oxtitle.value  }}
+                                        {{ _orderaarticle.oxorderarticles__oxselvariant.value  }}<br/>
+                                        ( x{{ _orderaarticle.oxorderarticles__oxamount.value  }} für {{ _orderaarticle.oxorderarticles__oxbrutprice.value  }} )
+                                    </h4>
+                                    <input type="hidden" name="wdf[products][{{ _oxid  }}][title]"
+                                           value="{{ _orderaarticle.oxorderarticles__oxtitle.value  }} {{ _orderaarticle.oxorderarticles__oxselvariant.value  }} ({{ _orderaarticle.oxorderarticles__oxartnum.value  }})">
+                                    {% if aOrderProducts|length == 1   %}
+                                        {# es gibt nur ein Produkt in der Bestellung #}
+                                        <input type="hidden" name="wdf[products][{{ _oxid  }}][return]" value="1">
+                                    {% else  %}
+                                        {# zeige chekbox bei mehreren produkten #}
+                                        <div class="checkbox">
+                                            <input type="hidden" name="wdf[products][{{ _oxid  }}][return]" value="0">
+                                            <label for="return_{{ _oxid  }}" class="btn btn-danger">
+                                                <input type="checkbox" name="wdf[products][{{ _oxid  }}][return]" value="1" id="return_{{ _oxid  }}">
+                                                Kauf widerrufen
+                                            </label>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                {# eigener Grund #}
+                                <div class="col-12 col-md-4">
+                                <textarea name="wdf[products][{{ _oxid  }}][reasons][custom]" class="form-control" rows="{{ oView.getWithdrawalReasons()|default(4)  }}"
+                                          placeholder="Warum möchten Sie dieses Produkt zurück geben?"></textarea>
+                                </div>
+
+								
+                            </div>
+                            <hr/>
+                        {% endfor %}
+
+                    {% else  %}
+                        {# nicht angemeldet oder hat keine Bestellungen oder keine Produkte in der Bestellung #}
+                        <h4>Den Kauf welcher Produkte möchten Sie widerrufen? <b>*</b></h4>
+                        <div class="mb-3 form-floating">
+                            
+                                <input type="hidden" name="wdf[products][0][return]" value="1">
+                                <textarea name="wdf[products][0][title]" class="form-control" rows="4" placeholder="Produktname (ggf. Artikelnummer), Menge und Preis"
+                                          required>{{ smarty.post.wdf.products[0].title  }}</textarea>
+                            
+                        </div>
+                        {# Grund #}
+                        <h4>Würden Sie uns auch den Grund für den Widerruf nennen?</h4>
+                        <div class="mb-3 form-floating">
+                            
+                            <textarea name="wdf[products][0][reasons][custom]" class="form-control" rows="{{ oView.getWithdrawalReasons()|default(4)  }}"
+                                      placeholder="Was anderes? Hier können Sie einen anderen Grund angeben">{{ smarty.post.wdf.products[0].reasons.custom  }}</textarea>
+                            
+                        </div>
+                    {% endif %}
+
+                    {% if ( oView.getUserOrders() and oxorderid ) or not oView.getUserOrders()   %}
+                        <div class="row " id="submitError">
+                            {% if submitError  %}
+                                <div class="">
+                                    <div class="alert alert-danger">
+                                        {{ translate({ ident: "WITHDRAWAL_ERROR_" ~ submitError, args: errorArgs   }) }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3 form-floating">
+
+                                <p class="form-check">
+                                    <input type="hidden" name="wdf[datenschutz]" value="0">
+                                    <input class="form-check-input" type="checkbox" name="wdf[datenschutz]" value="1" id="datenschutzok" required
+                                           {% if wdfdatenschutz == "1"  %}checked{% endif %}>
+                                    <label class="form-check-label" for="datenschutzok">
+                                        <b>*</b> Ich habe die <a href="https://oxid7.kleaner.eu/Datenschutz/" target="_blank"><u>Datenschutzbestimmungen</u></a> gelesen und
+                                        akzeptiert.
+                                    </label>
+                                </p>
+                                <p>
+                                    <button id="submit" type="submit" class="btn btn-highlight" name="fnc" value="submitWithdrawal">Formular abschicken</button>
+                                </p>
+
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </form>
+	<script>
+
+        {% if oxcmp_user and oView.getUserOrders()   %}
+			document.body.addEventListener("change", function (e)
+			{
+				if (e.target.matches("select#wdforder"))
+				{
+					var form = document.getElementById("wdf");
+					var params = new URLSearchParams(new FormData(form)).toString();
+					params += '&fnc=getOrderArticles&ajax=1';
+
+					fetch(form.getAttribute('action'), {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+						body: params
+					})
+					.then(function (response) { return response.text(); })
+					.then(function (result)
+					{
+						document.getElementById("content").innerHTML = result;
+					});
+				}
+			});
+        {% endif %}
+		
+		document.body.addEventListener("click", function (e)
+		{
+			var target = e.target.closest("#submit");
+			if (!target) return;
+
+			e.preventDefault();
+			e.stopPropagation();
+
+			var name    = document.getElementById("wdfname");
+			var street  = document.getElementById("wdfstreet");
+			var zipcity = document.getElementById("wdfzipcity");
+			var email   = document.getElementById("wdfemail");
+			var order   = document.getElementById("wdforder");
+
+			if (!name.value || !street.value || !zipcity.value || !email.value || !order.value)	{
+				document.getElementById("submitError").innerHTML = '<div class="col-12"><div class="alert alert-danger">Bitte füllen Sie alle Pflichtfelder aus.</div></div>';
+				return false;
+			}
+
+			var form = document.getElementById("wdf");
+			var params = new URLSearchParams(new FormData(form)).toString();
+			params += '&fnc=submitWithdrawal&ajax=1';
+
+			fetch(form.getAttribute('action'), {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body: params
+			})
+			.then(function (response) { return response.text(); })
+			.then(function (result)
+			{
+				// console.log(result);
+				// <main class="content" id="content1">  2026bene content1 muss als id vorhanden sein!
+				document.getElementById("content").innerHTML = result;
+			});
+		});
+
+	
+	</script>
+    </div>
+{% endcapture  %}
+{% if isAjaxCall == "1"  %}
+    {# AJAX-Request: nur den Inhalt zurückgeben, ohne Layout drumherum #}
+    {% for _block in oxidBlock_content  %}
+        {{ _block|raw  }}
+    {% endfor %}
+{% else  %}
+    {# normaler Seitenaufruf: in das Shop-Layout einbetten #}
+    {% include "layout/page.html.twig"  %}
+{% endif %}
+

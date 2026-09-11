@@ -1,0 +1,40 @@
+{% set shop		=oEmailView.getShop()  %}
+{% set oViewConf=oEmailView.getViewConfig()  %}
+{% set user		=oEmailView.getUser()  %}
+
+{% set mailcontent  %}
+    <p>
+        <b>Kunde:</b><br/>
+        {{  adata.name  }}<br/>
+        {{  adata.email  }}
+		
+		Kommentar:	{{  adata.message  }}
+		<br>
+		Artikel: <br>
+		{{  adata.body  }}
+    </p>
+
+{% endset  %}
+
+{% if toUser  %}
+	{% include "email/html/header.html.twig" with {title: ""} %}
+    <div class="block" style="width:100%;display:inline-block;vertical-align:top;">
+        <table width="100%">
+            <tr>
+                <td class="padding" align="left" style="padding-top:16px;padding-bottom:16px;padding-right:16px;padding-left:16px;font-size:16px;line-height:1.25;">
+                    <h3>Sehr geehre/-r {{ adata.name  }},</h3>
+                    <p>Sie haben soeben folgende Anfrage gestellt:</p>
+                    {{ mailcontent  }}
+                    <br>
+                    <br>
+                </td>
+            </tr>
+        </table>
+    </div>
+	{% include "email/html/footer.html.twig" %}
+{% else  %}
+    <h3>Hallo, </h3>
+    <p>soeben wurde im {{ shop.oxshops__oxname.value  }} Shop folgende Anfrage gestellt:</p>
+
+    {{ mailcontent  }}
+{% endif %}

@@ -1,0 +1,27 @@
+{% set shop		=oEmailView.getShop()  %}
+{% set user		=oEmailView.getUser()  %}
+
+{% set mailcontent  %}
+--- Kunde ---
+        {{  adata.name  }}
+        {{  adata.email  }}
+		
+		Kommentar:	{{  adata.message  }}
+		
+		Artikel: 
+		{{  adata.body  }}
+
+{% endset  %}
+{% if toUser  %}
+
+Sehr geehre/-r {{ adata.name  }},
+Sie haben soeben den folgenden Anfrage gestellt:
+
+{{ mailcontent  }}
+
+{% else  %}
+Hallo,
+soeben wurde im {{ shop.oxshops__oxname.value  }} Shop folgender Antrag auf Widerruf gestellt:
+
+{{ mailcontent  }}
+{% endif %}
