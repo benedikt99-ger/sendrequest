@@ -1,6 +1,6 @@
 <?php
 
-namespace benedikt99\sendrequest;
+namespace nuenemann\sendrequest;
 
 class Module
 {
