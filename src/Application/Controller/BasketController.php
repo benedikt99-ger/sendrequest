@@ -1,12 +1,20 @@
 <?php
 
-namespace \nuenemann\sendrequest\Application\Controller;
+namespace nuenemann\sendrequest\Application\Controller;
 
 use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\Eshop\Core\Email;
 
 class BasketController extends BasketController_parent
 {
+
+    /**
+     * all basket articles
+     *
+     * @var object
+     */
+    protected $_oBasketArticles = null;	
+	
     public function sendRequest()
     {
         $request = Registry::getRequest();
@@ -16,13 +24,15 @@ class BasketController extends BasketController_parent
             // nothing entered, just reload the basket page
             return;
         }
-
-        $basket = $this->getBasket();
+		
+		$session = Registry::getSession();
+		$oBasket = $session->getBasket();
 
         $email = oxNew(Email::class);
-        $email->setSubject('New basket request');
-        $email->setBody($this->buildRequestBody($message, $basket));
-        $email->setRecipient(Registry::getConfig()->getConfigParam('sAdminEmail'));
+        $email->setSubject('Preis-Anfrage');
+        $email->setBody($this->buildRequestBody($message, $oBasket));
+        // $email->setRecipient(Registry::getConfig()->getConfigParam('sAdminEmail'));
+		$email->setRecipient('benedikt@nuenemann.net');
         $email->setFrom(Registry::getConfig()->getConfigParam('sAdminEmail'));
         $email->send();
 
@@ -32,20 +42,24 @@ class BasketController extends BasketController_parent
         return;
     }
 
-    protected function buildRequestBody(string $message, $basket): string
+    protected function buildRequestBody(string $message, $oBasket): string
     {
         $lines   = [];
         $lines[] = "Message:\n{$message}\n";
         $lines[] = "Basket contents:";
-
-        foreach ($basket->getContents() as $item) {
-            $article = $item->getArticle(false);
+		
+		// $aBasketArticles = $this->getBasketArticles();
+		// $aBasketArticles = $oBasket->getContents();
+		// foreach ($oBasket->getContents() as $sKey => $oBasketItem) {
+		
+        foreach ($oBasket->getContents() as $sKey =>  $oBasketItem) {
+            $article = $oBasketItem->getArticle(false);
             if ($article) {
                 $lines[] = sprintf(
                     '- %s (Art.Nr. %s) x %d',
                     $article->getFieldData('oxtitle'),
                     $article->getFieldData('oxartnum'),
-                    $item->getAmount()
+                    $oBasketItem->getAmount()
                 );
             }
         }
