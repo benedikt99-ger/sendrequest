@@ -15,12 +15,13 @@ $aModule = [
     'title'       => 'sendrequest Formular für OXID 7',
     'description' => 'sendrequest Formular für OXID 7',
     'thumbnail'   => 'bn_logo.png',
-    'version'     => '0.2.0',
+    'version'     => '0.3.0',
     'author'      => 'Nünemann',
     'url'         => 'https://github.com/benedikt99-ger/sendrequest',
     'email'       => 'benedikt@nuenemann.de',
 	'extend' => [
-		BasketControllerParent::class => \nuenemann\sendrequest\Application\Controller\BasketController::class
+		BasketControllerParent::class => \nuenemann\sendrequest\Application\Controller\BasketController::class,
+	   \OxidEsales\Eshop\Core\Email::class => \nuenemann\sendrequest\Application\Extend\Email::class
 	],
     'controllers' => [
         
