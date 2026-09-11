@@ -1,6 +1,6 @@
 <?php
 
-namespace YourVendor\BasketRequest\Extend\Controller;
+namespace \nuenemann\sendrequest\Extend\Controller;
 
 use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\Eshop\Core\Email;
