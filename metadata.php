@@ -20,7 +20,7 @@ $aModule = [
     'url'         => 'https://github.com/benedikt99-ger/sendrequest',
     'email'       => 'benedikt@nuenemann.de',
 	'extend' => [
-		BasketControllerParent::class => \nuenemann\sendrequest\Application\Extend\Controller\BasketController::class
+		BasketControllerParent::class => \nuenemann\sendrequest\Application\Controller\BasketController::class
 	],
     'controllers' => [
         
