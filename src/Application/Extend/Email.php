@@ -1,6 +1,6 @@
 <?php
 
-namespace nuenemann\widerruf\Application\Extend;
+namespace nuenemann\sendrequest\Application\Extend;
 
 use \OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Internal\Framework\Templating\TemplateRendererBridgeInterface;
