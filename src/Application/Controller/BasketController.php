@@ -67,25 +67,24 @@ class BasketController extends BasketController_parent
     protected function buildRequestBody(string $message, $oBasket): string
     {
         $lines   = [];
-        $lines[] = "Kommentar:\n{$message}\n";
+
         $lines[] = "Artikel:";
 		
 		// $aBasketArticles = $this->getBasketArticles();
 		// $aBasketArticles = $oBasket->getContents();
 		// foreach ($oBasket->getContents() as $sKey => $oBasketItem) {
-		
+
+		$cnt=0;
         foreach ($oBasket->getContents() as $sKey =>  $oBasketItem) {
             $article = $oBasketItem->getArticle(false);
             if ($article) {
+				$cnt++;
 				$sLogfile = Registry::getConfig()->getLogsDir() .'bn.log';
-				$line = sprintf('- %s (Art.Nr. %s) x %d',$article->getFieldData('oxtitle'),$article->getFieldData('oxartnum'),$oBasketItem->getAmount());
+				$line = sprintf('%d. %s (Art.Nr. %s) x %d',$cnt,$article->getFieldData('oxtitle'),$article->getFieldData('oxartnum'),$oBasketItem->getAmount());
 				file_put_contents($sLogfile, trim(date('Y-m-d H:i:s')." ".$line).PHP_EOL,FILE_APPEND);	
 				
                 $lines[] = sprintf(
-                    '- %s (Art.Nr. %s) x %d',
-                    $article->getFieldData('oxtitle'),
-                    $article->getFieldData('oxartnum'),
-                    $oBasketItem->getAmount()
+                    ''%d. %s (Art.Nr. %s) x %d',$cnt,$article->getFieldData('oxtitle'),$article->getFieldData('oxartnum'),$oBasketItem->getAmount()
                 );
             }
         }
