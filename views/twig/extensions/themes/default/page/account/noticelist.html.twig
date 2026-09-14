@@ -1,0 +1,40 @@
+{% extends 'page/checkout/basket.html.twig' %}
+
+{% block undernoticelist %}
+    {{ parent() }}
+	
+	{# 2026 bene Preisanfrage  - Liste der Artikel  (Es geht ein Formular auf mit Kommentar #}
+		<div class="sendrequestbox">
+			<button  class="btn btn-lg btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapsesendRequest" aria-expanded="false" aria-controls="collapsesendRequest"><span>Merkzettel als Preis-Anfrage senden</span><svg aria-hidden="true"><use xlink:href="#down"></use></svg></button>
+		</div>
+
+		<div class="collapse" id="collapsesendRequest">
+		  <h4 class="h4 card-header card-title">Anfrage per Mail an Asiastyle</h4>
+		  <div class="card card-body">
+			{% if oxcmp_user.oxuser__oxusername.value %}
+				<p>Ihr Name: {{ oxcmp_user.oxuser__oxfname.value }} {{ oxcmp_user.oxuser__oxlname.value }} und E-Mail Adresse: {{ oxcmp_user.oxuser__oxusername.value }} werden als Absender genommen.</p>
+				<p>Die Artikel aus dem Warenkorb werden als Mail an uns gesendet. Nutzen Sie das Kommentarfeld für Ihre Anfrage.</p>
+				<p>Sie erhalten eine Kopie dieser E-Mail an Ihre E-Mail-Adresse.</p>
+				
+				<form name="sendRequestwithComment" action="{{ oViewConf.getSelfActionLink()|raw }}" method="post" novalidate>
+					{{ oViewConf.getHiddenSid()|raw }}
+					{{ oViewConf.getNavFormParams()|raw }}
+					<input type="hidden" name="fnc" value="sendRequest">
+					<input type="hidden" name="cl" value="basket">
+					<div class="mb-3 form-floating">
+						<textarea rows="15" placeholder=" "  name="sR_message" id="sR_message" class="form-control"></textarea>
+						<label class="" for="sR_message">{{ translate({ ident: "MESSAGE" }) }}</label>
+					</div>
+					<div class="mb-3">
+						<button class="btn btn-highlight" type="submit">{{ translate({ ident: "SEND" }) }}</button>
+					</div>		
+				</form>
+			{% else %}	
+				<p class="error">Sie müssen angemeldet sein, um diese Funktion zu nutzen</p>
+			{% endif %}	
+
+		  </div>
+		</div>
+	
+
+{% endblock %}
