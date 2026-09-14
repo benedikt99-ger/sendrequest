@@ -30,7 +30,6 @@ class Email extends Email_parent
             $this->setViewData("toOwner", true);
              $this->setSubject($adata["subject"]);
             $this->setRecipient($oShop->oxshops__oxorderemail->value, $oShop->oxshops__oxname->getRawValue());
-			$this->setRecipient('benedikt@nuenemann.net');
             $this->setFrom($oShop->oxshops__oxorderemail->value, $oShop->oxshops__oxname->getRawValue());
         }
 
