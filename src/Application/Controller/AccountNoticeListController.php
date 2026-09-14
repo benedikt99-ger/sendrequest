@@ -9,11 +9,11 @@ class AccountNoticeListController extends AccountNoticeListController_parent
 {
 
     /**
-     * all basket articles
+     * all articles
      *
      * @var object
      */
-    protected $_oBasketArticles = null;	
+    protected $_oArticles = null;	
 	
     public function sendRequest()
     {
@@ -21,7 +21,7 @@ class AccountNoticeListController extends AccountNoticeListController_parent
         $message = $request->getRequestEscapedParameter('sR_message');
 
         if (!$message) {
-            // nothing entered, just reload the basket page
+            // nothing entered, just reload page
 			Registry::getUtilsView()->addErrorToDisplay('SENDREQUEST_ERROR_1', false, true);
             return;
         }
@@ -65,24 +65,28 @@ class AccountNoticeListController extends AccountNoticeListController_parent
     protected function buildRequestBody(string $message): string
     {
         $lines   = [];
-        $lines[] = "Kommentar:\n{$message}\n";
         $lines[] = "Artikel:";
+        
+		$oUser = $this->getUser();
+        if ($oUser) {		
+			$this->_oArticles = $oUser->getBasket('noticelist')->getArticles();
+			$cnt=0;
+			foreach ($this->_oArticles as $sKey =>  $article) {
+				if ($article) {
+					$cnt++;
+					$sLogfile = Registry::getConfig()->getLogsDir() .'bn.log';
+					$line = sprintf('%d. %s (Art.Nr. %s)',$cnt,$article->getFieldData('oxtitle'),$article->getFieldData('oxartnum'));
+					file_put_contents($sLogfile, trim(date('Y-m-d H:i:s')." ".$line).PHP_EOL,FILE_APPEND);	
+					
+					$lines[] = sprintf(
+						'%d. %s (Art.Nr. %s) ',$cnt,$article->getFieldData('oxtitle'),$article->getFieldData('oxartnum')
+					);
+				}
+			}
+			return implode("\n", $lines);
 		
-        foreach ($this->getNoticeProductList() as $sKey =>  $oBasketItem) {
-            $article = $oBasketItem->getArticle(false);
-            if ($article) {
-				$sLogfile = Registry::getConfig()->getLogsDir() .'bn.log';
-				$line = sprintf('- %s (Art.Nr. %s) x %d',$article->getFieldData('oxtitle'),$article->getFieldData('oxartnum'),$oBasketItem->getAmount());
-				file_put_contents($sLogfile, trim(date('Y-m-d H:i:s')." ".$line).PHP_EOL,FILE_APPEND);	
-				
-                $lines[] = sprintf(
-                    '- %s (Art.Nr. %s) ',
-                    $article->getFieldData('oxtitle'),
-                    $article->getFieldData('oxartnum')
-                );
-            }
-        }
-
-        return implode("\n", $lines);
+		} else {
+			return '-';
+		}
     }
 }
