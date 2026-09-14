@@ -84,7 +84,7 @@ class BasketController extends BasketController_parent
 				file_put_contents($sLogfile, trim(date('Y-m-d H:i:s')." ".$line).PHP_EOL,FILE_APPEND);	
 				
                 $lines[] = sprintf(
-                    ''%d. %s (Art.Nr. %s) x %d',$cnt,$article->getFieldData('oxtitle'),$article->getFieldData('oxartnum'),$oBasketItem->getAmount()
+                    '%d. %s (Art.Nr. %s) x %d',$cnt,$article->getFieldData('oxtitle'),$article->getFieldData('oxartnum'),$oBasketItem->getAmount()
                 );
             }
         }
