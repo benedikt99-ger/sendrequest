@@ -1,0 +1,136 @@
+{% extends 'page/checkout/basket.html.twig' %}
+
+{% block checkout_basket_next_step_top %}
+    {{ parent() }}
+	
+	{# 2026 bene Preisanfrage  - Liste der Artikel  (Es geht ein Formular auf mit Kommentar #}
+		<div class="">
+			<button  class="btn btn-lg btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapsesendRequest" aria-expanded="false" aria-controls="collapsesendRequest"><span>Warenkorb als Preis-Anfrage senden</span><svg aria-hidden="true"><use xlink:href="#down"></use></svg></button>
+		</div>
+
+		<div class="collapse" id="collapsesendRequest">
+		  <h4 class="h4 card-header card-title">Anfrage per Mail an Asiastyle</h4>
+		  <div class="card card-body">
+			{% if oxcmp_user.oxuser__oxusername.value %}
+				<p>Ihr Name: {{ oxcmp_user.oxuser__oxfname.value }} {{ oxcmp_user.oxuser__oxlname.value }} und E-Mail Adresse: {{ oxcmp_user.oxuser__oxusername.value }} werden als Absender genommen.</p>
+				<p>Die Artikel aus dem Warenkorb werden als Mail an uns gesendet. Nutzen Sie das Kommentarfeld für Ihre Anfrage.</p>
+				<p>Sie erhalten eine Kopie dieser E-Mail an Ihre E-Mail-Adresse.</p>
+				
+				<form name="sendRequestwithComment" action="{{ oViewConf.getSelfActionLink()|raw }}" method="post" novalidate>
+					{{ oViewConf.getHiddenSid()|raw }}
+					{{ oViewConf.getNavFormParams()|raw }}
+					<input type="hidden" name="fnc" value="sendRequest">
+					<input type="hidden" name="cl" value="basket">
+					<div class="mb-3 form-floating">
+						<textarea rows="15" placeholder=" "  name="sR_message" id="sR_message" class="form-control"></textarea>
+						<label class="" for="sR_message">{{ translate({ ident: "MESSAGE" }) }}</label>
+					</div>
+					<div class="mb-3">
+						<button class="btn btn-highlight" type="submit">{{ translate({ ident: "SEND" }) }}</button>
+					</div>		
+				</form>
+			{% else %}	
+				<p class="error">Sie müssen angemeldet sein, um diese Funktion zu nutzen</p>
+			{% endif %}	
+
+		  </div>
+		</div>
+	
+	{# 2026 bene Start #}
+		{% set sumWeight=0 %}
+		{% set plz='49086' %}
+		{% set sumVolume=0 %}
+		{% set WeightDataMissing=0 %}
+		{% set VolDataMissing=0 %}
+		{% set lieferadresse='-' %}
+		{% if oxcmp_user.inGroup('oxiddealer') %}
+	
+		<div id="basketshippinginfo">
+		<h2>Infobox: Versandkosten für Händler</h2>
+		<p>siehe auch <a href="/Zahlung-und-Lieferung/" target="_blank"  >Komplette Versandkosteninfo für Händler </a></p>
+		
+		<p>
+		{% set seladr=oxcmp_user.getSelectedAddress() %}
+		{% set shippingID=oxcmp_basket.getShippingId() %}
+		{#  Rechnungsadresse:
+			{% if oxcmp_user.oxuser__oxsal.value or oxcmp_user.oxuser__oxfname.value or oxcmp_user.oxuser__oxlname.value %}
+				{% if oxcmp_user.oxuser__oxsal.value%}
+					{{ oxcmp_user.oxuser__oxsal.value|translate_salutation }}&nbsp;
+				{% endif %}
+				{{ oxcmp_user.oxuser__oxfname.value }}&nbsp;{{ oxcmp_user.oxuser__oxlname.value }}<br>
+			{% endif %}
+			{% if oxcmp_user.oxuser__oxstreet.value or oxcmp_user.oxuser__oxstreetnr.value %}
+				{{ oxcmp_user.oxuser__oxstreet.value }}&nbsp;{{ oxcmp_user.oxuser__oxstreetnr.value }}<br>
+			{% endif %}
+			{% if oxcmp_user.oxuser__oxzip.value or oxcmp_user.oxuser__oxcity.value %}
+				{% set plz = oxcmp_user.oxuser__oxzip.value %}
+				{{ oxcmp_user.oxuser__oxzip.value }}&nbsp;{{ oxcmp_user.oxuser__oxcity.value }}<br>
+			{% endif %}
+		#}
+
+		{% if oxcmp_user.getSelectedAddress() %}
+			{% set aUserAddresses = oxcmp_user.getUserAddresses() %}
+			
+			{% if aUserAddresses|length > 0 %}
+				{% for address in aUserAddresses %}
+						{% if address.isSelected() %}
+							<strong>Ihre Versandadresse: </strong><br>
+							{% if address.oxaddress__oxsal.value %}
+								{{ address.oxaddress__oxsal.value|translate_salutation }}&nbsp;
+							{% endif %}
+							{% if address.oxaddress__oxfname.value or address.oxaddress__oxlname.value %}
+								{{ address.oxaddress__oxfname.value }}&nbsp;{{ address.oxaddress__oxlname.value }}<br>
+							{% endif %}
+							{{ address.oxaddress__oxstreet.value }}&nbsp;{{ address.oxaddress__oxstreetnr.value }}<br>
+							{% set plz = address.oxaddress__oxzip.value %}
+							{{ address.oxaddress__oxzip.value }}&nbsp;{{ address.oxaddress__oxcity.value }}<br>
+						{% endif %}
+				{% endfor %}		
+						
+			{% endif %}
+			
+		{% endif %}
+				
+		{% if plz>"00000" and plz<"19999"  %}
+			 {% set freeShippingLimit=1250  %}
+		{% endif %}
+		{% if plz>"20000" and plz<"29999"  %}
+			{% set freeShippingLimit=800  %}
+		{% endif %}
+		{% if plz>"30000" and plz<"49999"  %}
+			{% set freeShippingLimit=500  %}
+		{% endif %}
+		{% if plz>"50000" and plz<"59999"  %}
+			{% set freeShippingLimit=750  %}
+		{% endif %}				
+		{% if plz>"60000" and plz<"69999"  %}
+			{% set freeShippingLimit=850  %}
+		{% endif %}	
+		{% if plz>"70000" and plz<"79999"  %}
+			{% set freeShippingLimit=800  %}
+		{% endif %}	
+		{% if plz>"80000" and plz<"89999"  %}
+			{% set freeShippingLimit=900  %}
+		{% endif %}	
+		{% if plz>"90000" and plz<"99999"  %}
+			{% set freeShippingLimit=850  %}
+		{% endif %}					
+		<br>Lieferung frei Haus für ihre PLZ {{ plz }}: ab {{ freeShippingLimit }} €<br>
+		{% if oxcmp_basket.getNettoSum() < freeShippingLimit %}
+			Ihnen fehlen noch {{ format_price(freeShippingLimit - oxcmp_basket.getNettoSum(), { currency: currency }) }} Nettowarenwert zur Lieferung frei Haus innerhalb Deutschlands
+			<br>
+		{% else %}
+			<br><!-- Sie haben ausreichend Nettowarenwert für Lieferung frei Haus innerhalb Deutschlands! -->
+		{% endif %}
+
+		{% ifcontent ident "abasketshippinginfo" set oCont %}
+			{{ oCont.oxcontents__oxcontent.value|raw }}
+		{% endifcontent %}
+		<br>	
+		</p>				
+		
+		</div>
+	{% endif %}
+	{# 2026 bene Ende #}			
+
+{% endblock %}
