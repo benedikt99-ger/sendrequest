@@ -4,7 +4,8 @@
  * Copyright © benedikt nünemann. All rights reserved.
  */
  
-use OxidEsales\Eshop\Application\Controller\BasketController as BasketControllerParent; 
+use OxidEsales\Eshop\Application\Controller\BasketController as BasketControllerParent;
+use OxidEsales\Eshop\Application\Controller\AccountNoticeListController as AccountNoticeListControllerParent;
 
 $sMetadataVersion = '2.1';
 /**
@@ -15,13 +16,14 @@ $aModule = [
     'title'       => 'sendrequest Formular für OXID 7',
     'description' => 'sendrequest Formular für OXID 7',
     'thumbnail'   => 'bn_logo.png',
-    'version'     => '0.3.0',
+    'version'     => '0.4.0',
     'author'      => 'Nünemann',
     'url'         => 'https://github.com/benedikt99-ger/sendrequest',
     'email'       => 'benedikt@nuenemann.de',
 	'extend' => [
 		BasketControllerParent::class => \nuenemann\sendrequest\Application\Controller\BasketController::class,
-	   \OxidEsales\Eshop\Core\Email::class => \nuenemann\sendrequest\Application\Extend\Email::class
+		AccountNoticeListControllerParent::class => \nuenemann\sendrequest\Application\Controller\AccountNoticeListController::class,
+		\OxidEsales\Eshop\Core\Email::class => \nuenemann\sendrequest\Application\Extend\Email::class
 	],
     'controllers' => [
         
