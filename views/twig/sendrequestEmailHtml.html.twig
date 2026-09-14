@@ -4,14 +4,22 @@
 
 {% set mailcontent  %}
     <p>
-        <b>Kunde:</b><br/>
+        <b>Absender:</b><br/>
         {{  adata.name  }}<br/>
         {{  adata.email  }}
-		
-		Kommentar:	{{  adata.message  }}
+		<br/>
+		{#
+		{{~ adata.message|raw| replace({ '\r\n': '\\r\\n', '\n': '\\n', '\r': '\\r' }) }} 
+				-> :&#13;&#10;&#13;&#10;Mit freundlichen Grüßen &#13;&#10;
+		{{- adata.message -}}
+			-> Kommentar:&#13;&#10;&#13;&#10;Mit freundlic
+		{{ adata.message|raw|nl2br }}
+			-> Kommentar: Mit freundlichen Grüßen
+		#}
+		Kommentar:	{{ adata.message|raw|nl2br }}<br>
 		<br>
-		Artikel: <br>
-		{{  adata.body  }}
+		<b>Artikel:</b> <br>
+		{{ adata.body|raw|nl2br }}
     </p>
 
 {% endset  %}
