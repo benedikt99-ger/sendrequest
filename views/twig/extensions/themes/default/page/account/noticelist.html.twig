@@ -1,4 +1,4 @@
-{% extends 'page/checkout/basket.html.twig' %}
+{% extends 'page/checkout/noticelist.html.twig' %}
 
 {% block undernoticelist %}
     {{ parent() }}
@@ -13,14 +13,14 @@
 		  <div class="card card-body">
 			{% if oxcmp_user.oxuser__oxusername.value %}
 				<p>Ihr Name: {{ oxcmp_user.oxuser__oxfname.value }} {{ oxcmp_user.oxuser__oxlname.value }} und E-Mail Adresse: {{ oxcmp_user.oxuser__oxusername.value }} werden als Absender genommen.</p>
-				<p>Die Artikel aus dem Warenkorb werden als Mail an uns gesendet. Nutzen Sie das Kommentarfeld für Ihre Anfrage.</p>
+				<p>Die Artikel vom Merkzettel werden als Mail an uns gesendet. Nutzen Sie das Kommentarfeld für Ihre Anfrage.</p>
 				<p>Sie erhalten eine Kopie dieser E-Mail an Ihre E-Mail-Adresse.</p>
 				
 				<form name="sendRequestwithComment" action="{{ oViewConf.getSelfActionLink()|raw }}" method="post" novalidate>
 					{{ oViewConf.getHiddenSid()|raw }}
 					{{ oViewConf.getNavFormParams()|raw }}
 					<input type="hidden" name="fnc" value="sendRequest">
-					<input type="hidden" name="cl" value="basket">
+					<input type="hidden" name="cl" value="account_noticelist">
 					<div class="mb-3 form-floating">
 						<textarea rows="15" placeholder=" "  name="sR_message" id="sR_message" class="form-control"></textarea>
 						<label class="" for="sR_message">{{ translate({ ident: "MESSAGE" }) }}</label>
