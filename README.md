@@ -7,8 +7,7 @@ OXID eShop 7 .........
 
 ## Features
 
-* ....
-
+* sends basket content or wishlist via mail to shop owner (Preisanfrage senden)
 
 ## Compatibility
 
@@ -17,6 +16,20 @@ OXID eShop 7 .........
 ## Installation
 
 Module is available on packagist. Install it via composer and activate the module
+
+## Configuration
+
+Example: basket.html.twig Add new block checkout_basket_next_step_top
+```
+                <div class="row">
+                    <div class="col-lg-8 col-xl-9">
+                        {% include "page/checkout/inc/basketcontents.html.twig" with {editable: true} %}
+
+					{% block checkout_basket_next_step_top %}
+					{% endblock %}
+				
+                    </div>
+```
 
 ```
 composer require benedikt99/sendrequest
